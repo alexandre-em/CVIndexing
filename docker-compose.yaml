@@ -1,0 +1,60 @@
+version: "3.9"
+
+services:
+     elasticsearch:
+          image: docker.elastic.co/elasticsearch/elasticsearch:7.15.0
+          container_name: elasticsearch
+          hostname: elasticsearch
+          environment:
+               - discovery.type=single-node
+          ports:
+               - 9200:9200
+               - 9300:9300
+          networks:
+               - elastic
+     kibana:
+          image: docker.elastic.co/kibana/kibana:7.15.0
+          container_name: kibana
+          hostname: kibana
+          environment:
+               - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+          ports:
+               - 5601:5601
+          links:
+               - elasticsearch:elasticsearch
+          depends_on:
+               - elasticsearch
+          networks:
+               - elastic
+     logstash:
+          image: docker.elastic.co/logstash/logstash:7.15.0
+          container_name: logstash
+          hostname: logstash
+          ports:
+               - 9600:9600
+               - 8089:8089
+          volumes:
+               - ./logstash:/usr/share/logstash/pipeline/
+          links:
+               - elasticsearch:elasticsearch
+          depends_on:
+               - elasticsearch
+          networks:
+               - elastic
+     app:
+          container_name: cvindexing
+          build: .
+          restart: on-failure
+          ports:
+               - 8080:8080
+          volumes:
+               - ./data/cv:/root/.m2
+          depends_on:
+               - elasticsearch
+          networks:
+               - elastic
+          links:
+               - elasticsearch
+networks:
+     elastic:
+          driver: bridge
