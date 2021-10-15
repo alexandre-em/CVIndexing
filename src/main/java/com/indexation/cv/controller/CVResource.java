@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.*;
 import java.util.List;
 
 @RestController
@@ -23,8 +24,8 @@ public class CVResource {
     }
 
     @PostMapping
-    public ResponseEntity<ErrorResponse> uploadCv(@RequestParam("file")MultipartFile file) {
-        String message = "File uploaded successfully";
-        return  ResponseEntity.status(HttpStatus.OK).body(new ErrorResponse(message));
+    public ResponseEntity<ErrorResponse> uploadCv(@RequestParam("file")MultipartFile file) throws IOException {
+        String content = cvService.parsePdf(file);
+        return  ResponseEntity.status(HttpStatus.OK).body(new ErrorResponse(content));
     }
 }
