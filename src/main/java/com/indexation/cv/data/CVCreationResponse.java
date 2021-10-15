@@ -1,7 +1,13 @@
 package com.indexation.cv.data;
 
-public class CVCreationResponse {
+public class CVCreationResponse implements Response {
     private String id;
-    public CVCreationResponse(String id) { this.id=id; }
+    private String message;
+    public CVCreationResponse(String id, String message) {
+        this.id=id;
+        this.message=message;
+    }
     public String getId() { return id; }
+    public String getMessage() { return message; }
+    public void setMessage(String message) { this.message=message; }
 }

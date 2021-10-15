@@ -1,6 +1,6 @@
 package com.indexation.cv.data;
 
-public class ErrorResponse {
+public class ErrorResponse implements Response {
     private String message;
     public ErrorResponse(String message) {
         this.message=message;
