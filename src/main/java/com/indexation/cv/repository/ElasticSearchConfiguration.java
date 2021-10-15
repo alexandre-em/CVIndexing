@@ -15,7 +15,7 @@ public class ElasticSearchConfiguration {
     @Bean
     public RestHighLevelClient client() {
         ClientConfiguration clientConfiguration = ClientConfiguration.builder()
-                .connectedTo("elasticsearch:9200")
+                .connectedTo("localhost:9200")
                 .withConnectTimeout(10000)
                 .build();
         return RestClients.create(clientConfiguration).rest();

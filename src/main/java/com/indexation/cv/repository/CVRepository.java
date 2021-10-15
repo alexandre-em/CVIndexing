@@ -1,5 +1,6 @@
 package com.indexation.cv.repository;
 
+import com.indexation.cv.data.CVCreationResponse;
 import com.indexation.cv.data.CVModel;
 import org.springframework.data.elasticsearch.annotations.Query;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;

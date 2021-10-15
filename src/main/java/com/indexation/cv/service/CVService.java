@@ -1,5 +1,6 @@
 package com.indexation.cv.service;
 
+import com.indexation.cv.data.CVCreationResponse;
 import com.indexation.cv.data.CVModel;
 import com.indexation.cv.repository.CVRepository;
 import org.apache.pdfbox.cos.COSDocument;
@@ -23,6 +24,9 @@ public class CVService {
 
     public List<CVModel> searchCV(String keyword) {
         return cvRepository.search(keyword);
+    }
+    public CVModel saveCV(CVModel cv) {
+        return cvRepository.save(cv);
     }
 
     public String parsePdf(MultipartFile file) throws IOException {

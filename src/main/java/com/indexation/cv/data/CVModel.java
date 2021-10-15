@@ -6,15 +6,16 @@ import org.springframework.data.elasticsearch.annotations.Document;
 @Document(indexName = "cv")
 public class CVModel {
     @Id
-    private String id;
-    private String firstName;
-    private String lastName;
-    // TODO: experience
-    // TODO: education
+    private String id; // public id
+    private String filename;
+    private DocumentType type;
+    private String content;
+
+    public CVModel(String filename, DocumentType type, String content) {
+        this.filename=filename;
+        this.type=type;
+        this.content=content;
+    }
 
     public String getId(){ return this.id; }
-    public String getFirstName(){ return this.firstName; }
-    public void setFirstName(String firstName){ this.firstName=firstName; }
-    public String getLastName(){ return this.lastName; }
-    public void setLastName(String lastName){ this.lastName=lastName; }
 }
