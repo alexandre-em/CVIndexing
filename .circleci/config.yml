@@ -1,10 +1,9 @@
 version: 2.1 # CircleCI version
 jobs:
-  build:
+  build-and-test:
     machine: true # Use a Linux VM instead of docker environment
     steps:
       - checkout
-      - run: ls
       - run: docker-compose up -d --build elasticsearch kibana logstash
       - run: docker-compose build app
       - store_artifacts:
@@ -12,8 +11,8 @@ jobs:
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
-workflows:
+workflows Help people interested in this repository understand your project by adding a R:
   sample: # This is the name of the workflow, feel free to change it to better match your workflow.
     # Inside the workflow, you define the jobs you want to run.
     jobs:
-      - build
+      - build-and-test

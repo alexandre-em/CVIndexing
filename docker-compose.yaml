@@ -33,6 +33,7 @@ services:
           ports:
                - 9600:9600
                - 8089:8089
+          command: logstash -f /usr/share/logstash/pipeline/logstash.conf
           volumes:
                - ./logstash:/usr/share/logstash/pipeline/
           links:
