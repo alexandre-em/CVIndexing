@@ -5,21 +5,27 @@ services:
           image: docker.elastic.co/elasticsearch/elasticsearch:7.15.0
           container_name: elasticsearch
           hostname: elasticsearch
+#          volumes:
+#               - ./data/elasticsearch:/usr/share/elasticsearch/data
           environment:
-               - discovery.type=single-node
+               ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+               ELASTIC_PASSWORD: "root"
+               xpack.security.enabled: "true"
+               xpack.monitoring.collection.enabled: "true"
+               discovery.type: "single-node"
           ports:
-               - 9200:9200
-               - 9300:9300
+               - "9200:9200"
+               - "9300:9300"
           networks:
                - elastic
      kibana:
           image: docker.elastic.co/kibana/kibana:7.15.0
           container_name: kibana
           hostname: kibana
-          environment:
-               - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+          volumes:
+               - ./config/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml:rw
           ports:
-               - 5601:5601
+               - "5601:5601"
           links:
                - elasticsearch:elasticsearch
           depends_on:
@@ -31,11 +37,11 @@ services:
           container_name: logstash
           hostname: logstash
           ports:
-               - 9600:9600
-               - 8089:8089
+               - "5044:5044"
+               - "9600:9600"
           command: logstash -f /usr/share/logstash/pipeline/logstash.conf
           volumes:
-               - ./logstash:/usr/share/logstash/pipeline/
+               - ./config/logstash:/usr/share/logstash/pipeline/
           links:
                - elasticsearch:elasticsearch
           depends_on:
@@ -46,16 +52,17 @@ services:
           container_name: cvindexing
           build: .
           restart: on-failure
+          command:
+               - ./run.sh
           ports:
-               - 8080:8080
+               - "8080:8080"
           volumes:
                - ./data/cv:/root/.m2
           depends_on:
                - elasticsearch
+               - logstash
           networks:
                - elastic
-          links:
-               - elasticsearch
 networks:
      elastic:
           driver: bridge
