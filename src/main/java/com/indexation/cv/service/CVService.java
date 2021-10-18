@@ -1,7 +1,7 @@
 package com.indexation.cv.service;
 
-import com.indexation.cv.data.CVCreationResponse;
 import com.indexation.cv.data.CVModel;
+import com.indexation.cv.data.CVResponse;
 import com.indexation.cv.repository.CVRepository;
 import org.apache.pdfbox.cos.COSDocument;
 import org.apache.pdfbox.io.RandomAccessFile;
@@ -13,8 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -22,17 +20,14 @@ public class CVService {
     @Autowired
     private CVRepository cvRepository;
 
-    public List<CVModel> searchCV(String keyword) {
-        return cvRepository.search(keyword);
-    }
+    public CVResponse searchById(String id) { return cvRepository.searchById(id); }
+    public List<CVModel> searchCV(String keyword) { return cvRepository.search(keyword); }
     public CVModel saveCV(CVModel cv) {
         return cvRepository.save(cv);
     }
 
-    public String parsePdf(MultipartFile file) throws IOException {
-        // Copy the file to a temporary directory
-        String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
-        File tmp = new File("/tmp/"+timeStamp+"pdf");
+    public String parsePdf(MultipartFile file, String path) throws IOException {
+        File tmp = new File(path);
         tmp.createNewFile();
         OutputStream os = new FileOutputStream(tmp);
         os.write(file.getBytes());
@@ -47,5 +42,4 @@ public class CVService {
         pdDoc.close();
         return content;
     }
-
 }

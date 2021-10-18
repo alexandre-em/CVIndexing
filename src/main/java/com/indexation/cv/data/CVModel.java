@@ -7,14 +7,17 @@ import org.springframework.data.elasticsearch.annotations.Document;
 public class CVModel {
     @Id
     private String id; // public id
-    private String filename;
-    private DocumentType type;
-    private String content;
+    protected String filename;
+    protected DocumentType type;
+    protected String content;
+    protected String url;
 
-    public CVModel(String filename, DocumentType type, String content) {
+
+    public CVModel(String filename, DocumentType type, String url, String content) {
         this.filename=filename;
         this.type=type;
         this.content=content;
+        this.url=url;
     }
 
     public String getId(){ return this.id; }
