@@ -21,6 +21,7 @@ import java.util.List;
 public class CVResource {
     @Autowired
     private CVService cvService;
+    public final static String API_URL = "http://localhost:8080/";
 
     /**
      * GET /api/v1/cv : Search single/multiple keyword on the cv
@@ -50,7 +51,8 @@ public class CVResource {
             if (DocumentType.valueOf(ext.toUpperCase()).equals(DocumentType.PDF)) {
                 CVLogger.info("uploadCv: Parsing pdf file...");
                 String content = cvService.parsePdf(file, newPath);
-                return ResponseEntity.status(HttpStatus.OK).body(cvService.saveCV(new CVModel(filename, DocumentType.PDF, "http://localhost:8080/static/"+filename, content)));
+                CVModel cv =  new CVModel(filename, DocumentType.PDF, API_URL + "/static/" + filename, content, new Date().toString());
+                return ResponseEntity.status(HttpStatus.OK).body(cvService.saveCV(cv));
             } else if (DocumentType.valueOf(ext.toUpperCase()).equals(DocumentType.DOC)) {
                 CVLogger.info("uploadCv: Parsing word file...");
                 throw new CVIndexationException("TODO");
