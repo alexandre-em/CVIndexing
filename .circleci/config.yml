@@ -4,9 +4,8 @@ jobs:
     machine: true # Use a Linux VM instead of docker environment
     steps:
       - checkout
-      - run: ls
       - run: docker-compose up -d --build elasticsearch kibana logstash
-      - run: docker-compose build app
+      - run: docker-compose up -d --build app
       - store_artifacts:
           path: ~/CVIndexing/features/fail-screenshots
 
