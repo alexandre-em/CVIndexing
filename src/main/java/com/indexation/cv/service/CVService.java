@@ -8,6 +8,12 @@ import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
+import org.apache.poi.hwpf.HWPFDocument;
+import org.apache.poi.hwpf.extractor.WordExtractor;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,20 +32,49 @@ public class CVService {
         return cvRepository.save(cv);
     }
 
-    public String parsePdf(MultipartFile file, String path) throws IOException {
+    private File convertMultipartFile(MultipartFile file, String path) throws IOException {
+        CVLogger.info("Converting MultipartFile to File");
         File tmp = new File(path);
         tmp.createNewFile();
         OutputStream os = new FileOutputStream(tmp);
         os.write(file.getBytes());
-        // Parsing the pdf
+        CVLogger.info("End converting MultipartFile to File");
+        return tmp;
+    }
+    public String parsePdf(MultipartFile file, String path) throws IOException {
+        File tmp = convertMultipartFile(file, path);
+        // Parsing the pdf file
         PDFParser parser = new PDFParser(new RandomAccessFile(tmp, "r"));
+        CVLogger.info("Parsing file to string with PdfParser");
         parser.parse();
+        CVLogger.info("End Parsing file to string with PdfParser");
         COSDocument cos = parser.getDocument();
         PDFTextStripper pdfTextStripper = new PDFTextStripper();
         PDDocument pdDoc = new PDDocument(cos);
         String content = pdfTextStripper.getText(pdDoc);
+        CVLogger.info("Closing parser");
         cos.close();
         pdDoc.close();
         return content;
+    }
+    public String parseDoc(MultipartFile file, String path) throws IOException, InvalidFormatException {
+        File tmp = convertMultipartFile(file, path);
+        // Parsing the doc file
+        FileInputStream fis = new FileInputStream(tmp);
+        HWPFDocument doc = new HWPFDocument(fis);
+        CVLogger.info("Parsing file to string with WordExtractor");
+        WordExtractor extractor = new WordExtractor(doc);
+        CVLogger.info("End Parsing file to string with WordExtractor");
+        return extractor.getText();
+    }
+    public String parseDocX(MultipartFile file, String path) throws IOException, InvalidFormatException {
+        File tmp = convertMultipartFile(file, path);
+        // Parsing the docx file
+        FileInputStream fis = new FileInputStream(tmp);
+        XWPFDocument xdoc = new XWPFDocument(OPCPackage.open(fis));
+        CVLogger.info("Parsing file to string with XWPFWordExtractor");
+        XWPFWordExtractor extractor = new XWPFWordExtractor(xdoc);
+        CVLogger.info("End Parsing file to string with XWPFWordExtractor");
+        return extractor.getText();
     }
 }
