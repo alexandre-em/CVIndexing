@@ -5,6 +5,7 @@ import com.indexation.cv.data.DocumentType;
 import com.indexation.cv.exception.CVIndexationException;
 import com.indexation.cv.service.CVLogger;
 import com.indexation.cv.service.CVService;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequestMapping("/api/v1/cv")
@@ -51,16 +53,29 @@ public class CVResource {
             if (DocumentType.valueOf(ext.toUpperCase()).equals(DocumentType.PDF)) {
                 CVLogger.info("uploadCv: Parsing pdf file...");
                 String content = cvService.parsePdf(file, newPath);
-                CVModel cv =  new CVModel(filename, DocumentType.PDF, API_URL + "/static/" + filename, content, new Date().toString());
+                CVModel cv =  new CVModel(filename, DocumentType.PDF, API_URL + "/static/" + filename, content, new Date().getTime()+"");
+                CVLogger.info("uploadCv: Saving pdf file data...");
                 return ResponseEntity.status(HttpStatus.OK).body(cvService.saveCV(cv));
-            } else if (DocumentType.valueOf(ext.toUpperCase()).equals(DocumentType.DOC)) {
+            } else if (DocumentType.valueOf(ext.toUpperCase()).equals(DocumentType.DOC) || DocumentType.valueOf(ext.toUpperCase()).equals(DocumentType.DOCX)) {
                 CVLogger.info("uploadCv: Parsing word file...");
-                throw new CVIndexationException("TODO");
+                String content;
+                DocumentType type;
+                if(ext.toUpperCase(Locale.ROOT).equals("DOC")){
+                    content = cvService.parseDoc(file, newPath);
+                    type = DocumentType.DOC;
+                }
+                else{
+                    content = cvService.parseDocX(file, newPath);
+                    type = DocumentType.DOCX;
+                }
+                CVModel cv =  new CVModel(filename, type, API_URL + "/static/" + filename, content, new Date().getTime()+"");
+                CVLogger.info("uploadCv: Saving word file data...");
+                return ResponseEntity.status(HttpStatus.OK).body(cvService.saveCV(cv));
             } else {
                 CVLogger.error("uploadCv: File extension not allowed");
                 throw new CVIndexationException("Extension not allowed: "+ext);
             }
-        } catch (IOException | NullPointerException | IllegalArgumentException e) {
+        } catch (IOException | NullPointerException | IllegalArgumentException | InvalidFormatException e) {
             CVLogger.error("uploadCv: "+e.getMessage());
             throw new CVIndexationException(e.getMessage());
         }
