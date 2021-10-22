@@ -5,6 +5,10 @@ import com.indexation.cv.data.DocumentType;
 import com.indexation.cv.exception.CVIndexationException;
 import com.indexation.cv.service.CVLogger;
 import com.indexation.cv.service.CVService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,6 +33,8 @@ public class CVResource {
      * @param keyword
      * @return id of CVs that contains a word matching at least one of the keyword
      */
+    @Operation(summary = "Get a list of cv ids matching the keywords, each keywords must be separated with a comma")
+    @ApiResponse(responseCode = "200", description = "The list of cv ids", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = CVModel.class))})
     @GetMapping
     public ResponseEntity<List<CVModel>> searchCv(@RequestParam("keyword") String keyword) {
         return ResponseEntity.ok(cvService.searchCV(keyword));
@@ -40,6 +46,8 @@ public class CVResource {
      * @return Id of the cv created
      * @throws IOException
      */
+    @Operation(summary = "Create an index of the CV")
+    @ApiResponse(responseCode = "201", description = "Cv indexed", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = CVModel.class))})
     @PostMapping
     public ResponseEntity<CVModel> uploadCv(@RequestParam("file")MultipartFile file) throws CVIndexationException {
         CVLogger.info("[POST] /api/v1/cv : Entering into uploadCv");
@@ -54,7 +62,7 @@ public class CVResource {
                 String content = cvService.parsePdf(file, newPath);
                 CVModel cv =  new CVModel(filename, DocumentType.PDF, API_URL + "/static/" + filename, content, new Date().getTime()+"");
                 CVLogger.info("uploadCv: Saving pdf file data...");
-                return ResponseEntity.status(HttpStatus.OK).body(cvService.saveCV(cv));
+                return ResponseEntity.status(HttpStatus.CREATED).body(cvService.saveCV(cv));
             } else if (DocumentType.valueOf(ext.toUpperCase()).equals(DocumentType.DOC) || DocumentType.valueOf(ext.toUpperCase()).equals(DocumentType.DOCX)) {
                 CVLogger.info("uploadCv: Parsing word file...");
                 String content;
@@ -69,7 +77,7 @@ public class CVResource {
                 }
                 CVModel cv =  new CVModel(filename, type, API_URL + "/static/" + filename, content, new Date().getTime()+"");
                 CVLogger.info("uploadCv: Saving word file data...");
-                return ResponseEntity.status(HttpStatus.OK).body(cvService.saveCV(cv));
+                return ResponseEntity.status(HttpStatus.CREATED).body(cvService.saveCV(cv));
             } else {
                 CVLogger.error("uploadCv: File extension not allowed");
                 throw new CVIndexationException("Extension not allowed: "+ext);
