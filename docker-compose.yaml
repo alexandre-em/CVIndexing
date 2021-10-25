@@ -63,6 +63,16 @@ services:
                - logstash
           networks:
                - elastic
+     cvindexer:
+          container_name: cvindexer
+          build: ./cv-indexer
+          restart: on-failure
+          ports:
+               - "80:5000"
+          depends_on:
+               - app
+          networks:
+               - elastic
 networks:
      elastic:
           driver: bridge
