@@ -5,7 +5,7 @@ jobs:
     steps:
       - checkout
       - run: docker-compose up -d --build elasticsearch kibana logstash
-      - run: docker-compose up -d --build app
+      - run: docker-compose up -d --build app cvindexer
       - store_artifacts:
           path: ~/CVIndexing/features/fail-screenshots
 

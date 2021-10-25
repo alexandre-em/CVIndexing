@@ -52,3 +52,5 @@ To be able to visualize the data on kibana:
 ```
 
 ![image](images/kibana_logs.png)
+## Front-end
+![image](images/front.png)

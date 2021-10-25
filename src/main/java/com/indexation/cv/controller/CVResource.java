@@ -30,7 +30,7 @@ import java.util.Locale;
 public class CVResource {
     @Autowired
     private CVService cvService;
-    public final static String API_URL = "http://localhost:8080/";
+    public final static String API_URL = "http://localhost:8080";
 
     /**
      * GET /api/v1/cv : Search single/multiple keyword on the cv
