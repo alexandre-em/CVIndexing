@@ -1,5 +1,6 @@
 package com.indexation.cv.controller;
 
+import com.indexation.cv.Constant;
 import com.indexation.cv.data.CVModel;
 import com.indexation.cv.data.DocumentType;
 import com.indexation.cv.data.Error;
@@ -30,7 +31,6 @@ import java.util.Locale;
 public class CVResource {
     @Autowired
     private CVService cvService;
-    public final static String API_URL = "http://localhost:8080";
 
     /**
      * GET /api/v1/cv : Search single/multiple keyword on the cv
@@ -63,10 +63,11 @@ public class CVResource {
             String newPath = "./static/"+filename;
             String[] fn = filename.split("\\.");
             String ext = fn[fn.length - 1];
+            File cvFile = CVService.convertMultipartFile(file, newPath);
             if (DocumentType.valueOf(ext.toUpperCase()).equals(DocumentType.PDF)) {
                 CVLogger.info("uploadCv: Parsing pdf file...");
-                String content = cvService.parsePdf(file, newPath);
-                CVModel cv =  new CVModel(filename, DocumentType.PDF, API_URL + "/static/" + filename, content, new Date().getTime()+"");
+                String content = cvService.parsePdf(cvFile);
+                CVModel cv =  new CVModel(filename, DocumentType.PDF, Constant.API_URL + "/static/" + filename, content, new Date().getTime()+"");
                 CVLogger.info("uploadCv: Saving pdf file data...");
                 return ResponseEntity.status(HttpStatus.CREATED).body(cvService.saveCV(cv));
             } else try {
@@ -75,14 +76,14 @@ public class CVResource {
                     String content;
                     DocumentType type;
                     if(ext.toUpperCase(Locale.ROOT).equals("DOC")){
-                        content = cvService.parseDoc(file, newPath);
+                        content = cvService.parseDoc(cvFile);
                         type = DocumentType.DOC;
                     }
                     else{
-                        content = cvService.parseDocX(file, newPath);
+                        content = cvService.parseDocX(cvFile);
                         type = DocumentType.DOCX;
                     }
-                    CVModel cv =  new CVModel(filename, type, API_URL + "/static/" + filename, content, new Date().getTime()+"");
+                    CVModel cv =  new CVModel(filename, type, Constant.API_URL + "/static/" + filename, content, new Date().getTime()+"");
                     CVLogger.info("uploadCv: Saving word file data...");
                     return ResponseEntity.status(HttpStatus.CREATED).body(cvService.saveCV(cv));
                 }
