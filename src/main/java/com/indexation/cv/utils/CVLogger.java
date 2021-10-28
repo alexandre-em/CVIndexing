@@ -1,6 +1,5 @@
-package com.indexation.cv.service;
+package com.indexation.cv.utils;
 
-import com.indexation.cv.Constant;
 import com.indexation.cv.controller.CVResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

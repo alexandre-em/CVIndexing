@@ -9,6 +9,8 @@ keywords.
 * **Sivacoumar Silvain**
 * **Bouibker Oussama**
 * **Em Alexandre**
+
+Task division [here](https://github.com/alexandre-em/CVIndexing/projects/1)
 ## Installation
 ### Requirements
 Install [Docker-compose](https://docs.docker.com/compose/install/), then pull and run elk images

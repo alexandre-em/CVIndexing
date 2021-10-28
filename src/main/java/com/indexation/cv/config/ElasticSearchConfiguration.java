@@ -1,6 +1,6 @@
-package com.indexation.cv.repository;
+package com.indexation.cv.config;
 
-import com.indexation.cv.Constant;
+import com.indexation.cv.utils.Constant;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

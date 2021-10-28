@@ -1,4 +1,4 @@
-package com.indexation.cv.repository;
+package com.indexation.cv.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

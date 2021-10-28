@@ -1,10 +1,8 @@
 package com.indexation.cv.controller;
 
-import com.indexation.cv.Constant;
 import com.indexation.cv.data.CVModel;
 import com.indexation.cv.data.DocumentType;
-import com.indexation.cv.data.Error;
-import com.indexation.cv.service.CVLogger;
+import com.indexation.cv.utils.CVLogger;
 import com.indexation.cv.service.CVService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -19,10 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 @RestController
 @RequestMapping("/api/v1/cv")
@@ -57,33 +52,17 @@ public class CVResource {
     public ResponseEntity<CVModel> uploadCv(@RequestParam("file")MultipartFile file) {
         CVLogger.info("[POST] /api/v1/cv : Entering into uploadCv");
         try {
-            String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
-            String filename = timeStamp+"_"+file.getOriginalFilename();
-            String newPath = "./static/"+filename;
-            String[] fn = filename.split("\\.");
+            String[] fn = file.getOriginalFilename().split("\\.");
             String ext = fn[fn.length - 1];
-            File cvFile = CVService.convertMultipartFile(file, newPath);
             if (DocumentType.PDF.name().equals(ext.toUpperCase())) {
-                CVLogger.info("uploadCv: Parsing pdf file...");
-                String content = cvService.parsePdf(cvFile);
-                CVModel cv =  new CVModel(filename, DocumentType.PDF, Constant.API_URL + "/static/" + filename, content, new Date().getTime()+"");
                 CVLogger.info("uploadCv: Saving pdf file data...");
-                return ResponseEntity.status(HttpStatus.CREATED).body(cvService.saveCV(cv));
+                CVModel cv = cvService.saveCvPDF(file);
+                return ResponseEntity.status(HttpStatus.CREATED).body(cv);
             } else {
                 if (DocumentType.DOC.name().equals(ext.toUpperCase()) || DocumentType.DOCX.name().equals(ext.toUpperCase())) {
-                    CVLogger.info("uploadCv: Parsing word file...");
-                    String content;
-                    DocumentType type;
-                    if (ext.toUpperCase(Locale.ROOT).equals(DocumentType.DOC.name())) {
-                        content = cvService.parseDoc(cvFile);
-                        type = DocumentType.DOC;
-                    } else {
-                        content = cvService.parseDocX(cvFile);
-                        type = DocumentType.DOCX;
-                    }
-                    CVModel cv = new CVModel(filename, type, Constant.API_URL + "/static/" + filename, content, new Date().getTime() + "");
+                    CVModel cv = cvService.saveCvWord(file, ext);
                     CVLogger.info("uploadCv: Saving word file data...");
-                    return ResponseEntity.status(HttpStatus.CREATED).body(cvService.saveCV(cv));
+                    return ResponseEntity.status(HttpStatus.CREATED).body(cv);
                 }
                 CVLogger.error("uploadCv: File extension not allowed");
                 return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(null);

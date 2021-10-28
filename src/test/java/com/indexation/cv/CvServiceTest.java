@@ -4,13 +4,12 @@ import com.indexation.cv.data.CVModel;
 import com.indexation.cv.data.CVResponse;
 import com.indexation.cv.data.DocumentType;
 import com.indexation.cv.service.CVService;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Date;
 import java.util.List;
@@ -19,16 +18,18 @@ import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = CvApplication.class)
 public class CvServiceTest {
     @Autowired
     private CVService cvService;
+    private CVModel cv;
     protected String cvId;
     private void setCvId(String id) { cvId=id; }
-    private CVModel cv = new CVModel("my_cv.pdf", DocumentType.PDF, "here", "This is a dummy cv", new Date().getTime()+"");
 
-    @After
+    @BeforeEach
+    public void before() { cv = new CVModel("my_cv.pdf", DocumentType.PDF, "here", "This is a dummy cv", new Date().getTime()+""); }
+
+    @AfterEach
     public void after() {
         CVModel testCV = cvService.searchById(cvId);
         cvService.delete(testCV);
@@ -37,7 +38,7 @@ public class CvServiceTest {
     @Test
     @DisplayName("Test if the file is well indexed and saved on the server")
     public void testSave() {
-        CVModel testCV = cvService.saveCV(cv);
+        CVModel testCV = cvService.save(cv);
         assertNotNull(testCV.getId());
         assertEquals(testCV.getType(), cv.getType());
         assertEquals(testCV.getUploadedDate(), cv.getUploadedDate());
@@ -47,7 +48,7 @@ public class CvServiceTest {
     @Test
     @DisplayName("Test if the file saved id is find by the api")
     public void testFindId() {
-        CVModel newCv = cvService.saveCV(cv);
+        CVModel newCv = cvService.save(cv);
         CVResponse testCV = cvService.searchById(newCv.getId());
 
         assertNotNull(testCV.getId());
@@ -61,7 +62,7 @@ public class CvServiceTest {
     @Test
     @DisplayName("Test if the api find cvs with specific keywords")
     public void testFindByKeywords() {
-        CVModel newCv = cvService.saveCV(cv);
+        CVModel newCv = cvService.save(cv);
         System.out.println(newCv.getId());
         List<CVModel> testCV = cvService.searchCV("dummy");
         assertTrue(testCV.size() >= 1);

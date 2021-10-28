@@ -3,14 +3,13 @@ package com.indexation.cv;
 import com.indexation.cv.data.CVModel;
 import com.indexation.cv.data.DocumentType;
 import com.indexation.cv.service.CVService;
-import org.junit.Test;
+import com.indexation.cv.utils.Constant;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.*;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -23,7 +22,6 @@ import static org.junit.Assert.*;
 /**
  * Test all web endpoints and its methods of this API with different scenarios
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = CvApplication.class)
 public class CVWebIntegrationTest {
     @Autowired
@@ -41,7 +39,7 @@ public class CVWebIntegrationTest {
     @DisplayName("Test if the GET `/api/v1/cv/{id}` find and return the cv details")
     public void testFindCVById() {
         CVModel cvModel = new CVModel("test-toto", DocumentType.PDF, "path_to_toto_cv","Je m'appelle Toto et je fais du java", new Date().getTime()+"");
-        cvModel = cvService.saveCV(cvModel);
+        cvModel = cvService.save(cvModel);
 
         ResponseEntity<String> response = restTemplate.getForEntity(Constant.API_URL+"/api/v1/cv/"+cvModel.getId(), String.class);
         assertEquals(response.getStatusCode(), HttpStatus.OK);

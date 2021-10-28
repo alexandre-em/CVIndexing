@@ -1,7 +1,7 @@
 package com.indexation.cv.controller;
 
 import com.indexation.cv.data.CVResponse;
-import com.indexation.cv.service.CVLogger;
+import com.indexation.cv.utils.CVLogger;
 import com.indexation.cv.service.CVService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
