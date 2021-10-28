@@ -1,4 +1,4 @@
-version: "3.2"
+version: "2.1"
 
 services:
      elasticsearch:
@@ -16,6 +16,8 @@ services:
           ports:
                - "9200:9200"
                - "9300:9300"
+          healthcheck:
+               test: ["CMD", "curl", "-f", "http://elastic:root@elasticsearch:9200"]
           networks:
                - elastic
      kibana:
@@ -44,12 +46,14 @@ services:
                - ./config/logstash:/usr/share/logstash/pipeline/
           links:
                - elasticsearch:elasticsearch
+          healthcheck:
+               test: ["CMD", "curl", "-f", "http://logstash:9600"]
           depends_on:
                - elasticsearch
           networks:
                - elastic
      app:
-          container_name: cvindexing
+          container_name: app
           build: .
           restart: on-failure
           command:
@@ -58,9 +62,13 @@ services:
                - "8080:8080"
           volumes:
                - ./data/cv:/root/.m2
+          healthcheck:
+               test: ["CMD", "curl", "-f", "http://app:8080/api/v1/cv?keyword=java"]
           depends_on:
-               - elasticsearch
-               - logstash
+               elasticsearch:
+                    condition: service_healthy
+               logstash:
+                    condition: service_healthy
           networks:
                - elastic
      cvindexer:
@@ -70,7 +78,8 @@ services:
           ports:
                - "80:5000"
           depends_on:
-               - app
+               app:
+                    condition: service_healthy
           networks:
                - elastic
 networks:

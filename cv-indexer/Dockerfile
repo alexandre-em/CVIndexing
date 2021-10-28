@@ -1,6 +1,5 @@
-# The first stage
-# Build React static files
-FROM node:16.1-alpine as build
+FROM node:16-alpine3.14 as build
+LABEL maintainer="alexandre.em@pm.me"
 
 WORKDIR /cv-indexer
 COPY . .

@@ -1,18 +1,27 @@
-version: 2.1 # CircleCI version
+version: 2.1
 jobs:
-  build:
-    machine: true # Use a Linux VM instead of docker environment
+  unit-test:
+    machine: true
     steps:
       - checkout
-      - run: docker-compose up -d --build elasticsearch kibana logstash
-      - run: docker-compose up -d --build app cvindexer
+      - run: ./mvnw test -Dtest="CvUtilTest"
+      - store_artifacts:
+          path: store-results
+  build-test:
+    machine: true
+    steps:
+      - checkout
+      - run: docker-compose up -d --build elasticsearch logstash
+      - run: docker-compose up -d --build app
+      - run: docker-compose up -d --build cvindexer
+      - run: docker exec -it app ./mvnw test
       - store_artifacts:
           path: ~/CVIndexing/features/fail-screenshots
 
-# Invoke jobs via workflows
-# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  sample: # This is the name of the workflow, feel free to change it to better match your workflow.
-    # Inside the workflow, you define the jobs you want to run.
+  build-test-deploy:
     jobs:
-      - build
+      - unit-test
+      - build-test:
+          requires:
+            - unit-test

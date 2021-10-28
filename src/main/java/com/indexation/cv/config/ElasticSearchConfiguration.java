@@ -1,5 +1,6 @@
-package com.indexation.cv.repository;
+package com.indexation.cv.config;
 
+import com.indexation.cv.utils.Constant;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,8 +16,8 @@ public class ElasticSearchConfiguration {
     @Bean
     public RestHighLevelClient client() {
         ClientConfiguration clientConfiguration = ClientConfiguration.builder()
-                .connectedTo("elasticsearch:9200")
-                .withBasicAuth("elastic", "root")
+                .connectedTo(Constant.ELASTIC_ENDPOINT)
+                .withBasicAuth(Constant.ELASTIC_USERNAME, Constant.ELASTIC_PASSWORD)
                 .withConnectTimeout(10000)
                 .build();
         return RestClients.create(clientConfiguration).rest();

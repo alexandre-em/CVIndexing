@@ -2,9 +2,7 @@ package com.indexation.cv.controller;
 
 import com.indexation.cv.data.CVModel;
 import com.indexation.cv.data.DocumentType;
-import com.indexation.cv.data.Error;
-import com.indexation.cv.exception.CVIndexationException;
-import com.indexation.cv.service.CVLogger;
+import com.indexation.cv.utils.CVLogger;
 import com.indexation.cv.service.CVService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -19,10 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 @RestController
 @RequestMapping("/api/v1/cv")
@@ -30,7 +25,6 @@ import java.util.Locale;
 public class CVResource {
     @Autowired
     private CVService cvService;
-    public final static String API_URL = "http://localhost:8080";
 
     /**
      * GET /api/v1/cv : Search single/multiple keyword on the cv
@@ -58,43 +52,24 @@ public class CVResource {
     public ResponseEntity<CVModel> uploadCv(@RequestParam("file")MultipartFile file) {
         CVLogger.info("[POST] /api/v1/cv : Entering into uploadCv");
         try {
-            String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
-            String filename = timeStamp+"_"+file.getOriginalFilename();
-            String newPath = "./static/"+filename;
-            String[] fn = filename.split("\\.");
+            String[] fn = file.getOriginalFilename().split("\\.");
             String ext = fn[fn.length - 1];
-            if (DocumentType.valueOf(ext.toUpperCase()).equals(DocumentType.PDF)) {
-                CVLogger.info("uploadCv: Parsing pdf file...");
-                String content = cvService.parsePdf(file, newPath);
-                CVModel cv =  new CVModel(filename, DocumentType.PDF, API_URL + "/static/" + filename, content, new Date().getTime()+"");
+            if (DocumentType.PDF.name().equals(ext.toUpperCase())) {
                 CVLogger.info("uploadCv: Saving pdf file data...");
-                return ResponseEntity.status(HttpStatus.CREATED).body(cvService.saveCV(cv));
-            } else try {
-                if (DocumentType.valueOf(ext.toUpperCase()).equals(DocumentType.DOC) || DocumentType.valueOf(ext.toUpperCase()).equals(DocumentType.DOCX)) {
-                    CVLogger.info("uploadCv: Parsing word file...");
-                    String content;
-                    DocumentType type;
-                    if(ext.toUpperCase(Locale.ROOT).equals("DOC")){
-                        content = cvService.parseDoc(file, newPath);
-                        type = DocumentType.DOC;
-                    }
-                    else{
-                        content = cvService.parseDocX(file, newPath);
-                        type = DocumentType.DOCX;
-                    }
-                    CVModel cv =  new CVModel(filename, type, API_URL + "/static/" + filename, content, new Date().getTime()+"");
+                CVModel cv = cvService.saveCvPDF(file);
+                return ResponseEntity.status(HttpStatus.CREATED).body(cv);
+            } else {
+                if (DocumentType.DOC.name().equals(ext.toUpperCase()) || DocumentType.DOCX.name().equals(ext.toUpperCase())) {
+                    CVModel cv = cvService.saveCvWord(file, ext);
                     CVLogger.info("uploadCv: Saving word file data...");
-                    return ResponseEntity.status(HttpStatus.CREATED).body(cvService.saveCV(cv));
+                    return ResponseEntity.status(HttpStatus.CREATED).body(cv);
                 }
-            } catch (IllegalArgumentException iae) {
-                    CVLogger.error("uploadCv: File extension not allowed");
-                    return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(null);
-                }
+                CVLogger.error("uploadCv: File extension not allowed");
+                return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(null);
+            }
         } catch (IOException | NullPointerException | InvalidFormatException e) {
             CVLogger.error("uploadCv: "+e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
-        CVLogger.error("uploadCv: Error case where nothing happen");
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // Must not happen
     }
 }
