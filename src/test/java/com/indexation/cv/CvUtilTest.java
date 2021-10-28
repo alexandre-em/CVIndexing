@@ -4,14 +4,12 @@ import com.indexation.cv.utils.CVUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.File;
 import java.io.IOException;
 
 import static org.junit.Assert.*;
 
-@SpringBootTest(classes = CvApplication.class)
 public class CvUtilTest {
     @Test
     @DisplayName("Test if the pdf file is well parsed")
