@@ -6,7 +6,7 @@ It allows the user to upload then index __*.doc, *.docx and *.pdf__ CV files to 
 keywords.
 
 ### Group:
-* **Sivacoumar Silva**
+* **Sivacoumar Silvain**
 * **Bouibker Oussama**
 * **Em Alexandre**
 ## Installation

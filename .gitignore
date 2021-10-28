@@ -35,6 +35,4 @@ build/
 
 ### docker ###
 /data
-static/*.pdf
-static/*.doc
-static/*.docx
+static/*.*

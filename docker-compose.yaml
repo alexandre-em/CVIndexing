@@ -49,7 +49,7 @@ services:
           networks:
                - elastic
      app:
-          container_name: cvindexing
+          container_name: app
           build: .
           restart: on-failure
           command:

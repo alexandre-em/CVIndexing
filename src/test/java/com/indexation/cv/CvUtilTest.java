@@ -1,9 +1,9 @@
 package com.indexation.cv;
 
-import com.indexation.cv.CvApplication;
 import com.indexation.cv.service.CVService;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.junit.Test;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,6 +21,7 @@ public class CvUtilTest {
     CVService cvService;
 
     @Test
+    @DisplayName("Test if the pdf file is well parsed")
     public void testPDFParsing() throws IOException {
         File fileTest = new File("input/cv.pdf");
         String pdfContent = cvService.parsePdf(fileTest);
@@ -34,6 +35,7 @@ public class CvUtilTest {
     }
 
     @Test
+    @DisplayName("Test if the doc file is well parsed")
     public void testDOCParsing() throws IOException, InvalidFormatException {
         File fileTest = new File("input/Rouquier_CV.doc");
         String docContent = cvService.parseDoc(fileTest);
@@ -46,6 +48,7 @@ public class CvUtilTest {
     }
 
     @Test
+    @DisplayName("Test if the docx file is well parsed")
     public void testDOCXParsing() throws IOException, InvalidFormatException {
         File fileTest = new File("input/dijou_CV.docx");
         String docxContent = cvService.parseDocX(fileTest);

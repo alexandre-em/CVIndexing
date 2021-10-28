@@ -6,6 +6,7 @@ import com.indexation.cv.data.DocumentType;
 import com.indexation.cv.service.CVService;
 import org.junit.After;
 import org.junit.Test;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -34,6 +35,7 @@ public class CvServiceTest {
     }
 
     @Test
+    @DisplayName("Test if the file is well indexed and saved on the server")
     public void testSave() {
         CVModel testCV = cvService.saveCV(cv);
         assertNotNull(testCV.getId());
@@ -43,6 +45,7 @@ public class CvServiceTest {
     }
 
     @Test
+    @DisplayName("Test if the file saved id is find by the api")
     public void testFindId() {
         CVModel newCv = cvService.saveCV(cv);
         CVResponse testCV = cvService.searchById(newCv.getId());
@@ -56,6 +59,7 @@ public class CvServiceTest {
     }
 
     @Test
+    @DisplayName("Test if the api find cvs with specific keywords")
     public void testFindByKeywords() {
         CVModel newCv = cvService.saveCV(cv);
         System.out.println(newCv.getId());

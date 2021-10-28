@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,6 +33,8 @@ public class CVIdResource {
     @GetMapping
     public ResponseEntity<CVResponse> searchById(@PathVariable("id") String id) {
         CVLogger.info("[GET] CV ID "+id);
-        return ResponseEntity.ok(cvService.searchById(id));
+        CVResponse cv = cvService.searchById(id);
+        if (cv==null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        return ResponseEntity.ok(cv);
     }
 }
