@@ -17,7 +17,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Date;
 
 import static java.lang.Integer.parseInt;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test all web endpoints and its methods of this API with different scenarios

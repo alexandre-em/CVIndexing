@@ -55,4 +55,8 @@ public class TagsService {
                         .collect(Collectors.toList()));
         return tagsRepository.save(cvTags);
     }
+
+    public void removeTags(Tags tag) {
+        tagsRepository.delete(tag);
+    }
 }
