@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -23,9 +24,17 @@ public class CVService {
     private CVRepository cvRepository;
 
     public CVResponse searchById(String id) { return cvRepository.searchById(id); }
-    public List<CVModel> searchCV(String keyword) { return cvRepository.search(keyword); }
     public CVModel save(CVModel cv) { return cvRepository.save(cv); }
     public void delete(CVModel cv) { cvRepository.delete(cv); }
+
+    public List<CVModel> searchCV(String keyword, boolean matchAll) {
+        if (!matchAll)
+            return cvRepository.search(keyword);
+        else {
+            List<String> keywords = Arrays.asList(keyword.split(","));
+            return cvRepository.findCVModelsByContent(keywords);
+        }
+    }
 
     public CVModel saveCvPDF(MultipartFile file) throws IOException {
         File cvFile = CVUtils.convertMultipartFile(file);

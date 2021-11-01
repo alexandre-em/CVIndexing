@@ -12,6 +12,7 @@ import java.util.List;
 public interface CVRepository extends ElasticsearchRepository<CVModel, String> {
     @Query("{\"match\": {\"content\": \"?0\" }}")
     List<CVModel> search(String keyword);
+    List<CVModel> findCVModelsByContent(List<String> keywords);
     @Query("{\"term\": {\"_id\": \"?0\" }}")
     CVResponse searchById(String id);
 }

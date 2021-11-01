@@ -64,7 +64,7 @@ public class CvServiceTest {
     public void testFindByKeywords() {
         CVModel newCv = cvService.save(cv);
         System.out.println(newCv.getId());
-        List<CVModel> testCV = cvService.searchCV("dummy");
+        List<CVModel> testCV = cvService.searchCV("dummy", false);
         assertTrue(testCV.size() >= 1);
         List<CVModel> findCv = testCV.stream().filter(val -> Objects.equals(val.getId(), newCv.getId())).collect(Collectors.toList());
         assertEquals(findCv.size(), 1);
