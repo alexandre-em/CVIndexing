@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(classes = CvApplication.class)
 public class CvServiceTest {
@@ -46,7 +46,7 @@ public class CvServiceTest {
     }
 
     @Test
-    @DisplayName("Test if the file saved id is find by the api")
+    @DisplayName("Test find a CV by its `id`")
     public void testFindId() {
         CVModel newCv = cvService.save(cv);
         CVResponse testCV = cvService.searchById(newCv.getId());
@@ -64,7 +64,7 @@ public class CvServiceTest {
     public void testFindByKeywords() {
         CVModel newCv = cvService.save(cv);
         System.out.println(newCv.getId());
-        List<CVModel> testCV = cvService.searchCV("dummy");
+        List<CVModel> testCV = cvService.searchCV("dummy", false);
         assertTrue(testCV.size() >= 1);
         List<CVModel> findCv = testCV.stream().filter(val -> Objects.equals(val.getId(), newCv.getId())).collect(Collectors.toList());
         assertEquals(findCv.size(), 1);

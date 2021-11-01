@@ -39,6 +39,63 @@ Then you can run the project app with:
 :warning: **NOTE**
 Make sure to have Java installed and the JAVA_HOME environment set. :warning:
 ---
+## Endpoints examples
+### Search Cvs by keywords
+```shell
+    $ curl "localhost:8080/api/v1/cv?keyword=java,node" | jq
+```
+
+### Search Cv by id
+```shell
+    $ curl "localhost:8080/api/v1/cv/BQZt13wBU44mpGRqWCPE" | jq
+```
+
+### Index a new CV
+```shell
+    # Example without tags
+    $ curl -X POST localhost:8080/api/v1/cv -H 'accept: application/json' -H 'Content-Type: multipart/form-data' -F 'file=@cv.pdf;type=application/pdf' | jq
+    # Example with tags
+    $ curl -X POST localhost:8080/api/v1/cv -H 'accept: application/json' -H 'Content-Type: multipart/form-data' -F 'file=@cv.pdf;type=application/pdf' -F "tags=java" -F "tags=node" -F "tags=python" | jq
+```
+
+### Get CV Tags by `cv_id`
+```shell
+    $ curl "localhost:8080/api/v1/tag/cv/JwYD2HwBU44mpGRqQ1dw" | jq
+      % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                     Dload  Upload   Total   Spent    Left  Speed
+      100   103    0   103    0     0   4120      0 --:--:-- --:--:-- --:--:--  4120
+      {
+        "id": "KQYD2HwBU44mpGRqRFcJ",
+        "cvId": "JwYD2HwBU44mpGRqQ1dw",
+        "tags": [
+          "java",
+          "node",
+          "React",
+          "Typescript"
+        ]
+      }
+```
+
+### Add tags to a CV
+```shell
+    $ curl -X PATCH "localhost:8080/api/v1/tag/cv/JwYD2HwBU44mpGRqQ1dw?tags=Spring&tags=Elasticsearch" | jq
+      % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                       Dload  Upload   Total   Spent    Left  Speed
+        100   128    0   128    0     0   1488      0 --:--:-- --:--:-- --:--:--  1505
+      {
+        "id": "KQYD2HwBU44mpGRqRFcJ",
+        "cvId": "JwYD2HwBU44mpGRqQ1dw",
+        "tags": [
+          "java",
+          "node",
+          "React",
+          "Typescript",
+          "Spring",
+          "Elasticsearch"
+        ]
+      }
+```
+
 ## OpenAPI
 You can also visualize how to use all endpoints with the OpenApi available at [api/apidocs.html](http://localhost:8080/apidocs.html)
 
