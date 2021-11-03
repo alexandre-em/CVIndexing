@@ -11,17 +11,18 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CvUtilTest {
+    private final String[] env = {"env"};
     @Test
     @DisplayName("Test if the pdf file is well parsed")
     public void testPDFParsing() throws IOException {
         File fileTest = new File("input/cv.pdf");
-        String pdfContent = CVUtils.parsePdf(fileTest);
+        String pdfContent = CVUtils.parsePdf(fileTest, env);
         assertTrue(pdfContent.contains("github.com/marvinroger"));
         assertTrue(pdfContent.contains("React"));
         assertTrue(pdfContent.contains("TOEIC"));
 
         fileTest = new File("input/164316.pdf");
-        pdfContent = CVUtils.parsePdf(fileTest);
+        pdfContent = CVUtils.parsePdf(fileTest, env);
         assertTrue(pdfContent.contains("Fersi Karim"));
         assertTrue(pdfContent.contains("Spring boot"));
     }
@@ -30,12 +31,12 @@ public class CvUtilTest {
     @DisplayName("Test if the doc file is well parsed")
     public void testDOCParsing() throws IOException, InvalidFormatException {
         File fileTest = new File("input/Rouquier_CV.doc");
-        String docContent = CVUtils.parseDoc(fileTest);
+        String docContent = CVUtils.parseDoc(fileTest, env);
         assertTrue(docContent.contains("Jean-Baptiste Rouquier"));
         assertTrue(docContent.contains("Java"));
 
         fileTest = new File("input/dijou_CV.doc");
-        docContent = CVUtils.parseDoc(fileTest);
+        docContent = CVUtils.parseDoc(fileTest, env);
         assertTrue(docContent.contains("PAUL DIJOU"));
         assertTrue(docContent.contains("Java"));
     }
@@ -44,7 +45,7 @@ public class CvUtilTest {
     @DisplayName("Test if the docx file is well parsed")
     public void testDOCXParsing() throws IOException, InvalidFormatException {
         File fileTest = new File("input/dijou_CV.docx");
-        String docxContent = CVUtils.parseDocX(fileTest);
+        String docxContent = CVUtils.parseDocX(fileTest, env);
         assertTrue(docxContent.contains("PAUL DIJOU"));
         assertTrue(docxContent.contains("Java"));
     }

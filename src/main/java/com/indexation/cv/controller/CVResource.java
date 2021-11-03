@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +30,8 @@ public class CVResource {
     private CVService cvService;
     @Autowired
     private TagsService tagsService;
+    @Autowired
+    private Environment env;
 
     /**
      * GET /api/v1/cv : Search single/multiple keyword on the cv
@@ -40,6 +43,7 @@ public class CVResource {
     @ApiResponse(responseCode = "200", description = "The list of cv ids", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = CVModel.class))})
     @GetMapping
     public ResponseEntity<List<CVModel>> searchCv(@RequestParam("keyword") String keyword, @RequestParam(name = "match_all", defaultValue = "false", required = false) boolean matchAll) {
+        CVLogger.info("Get CV by keywords: \"" + keyword + "\" with match_all:" + matchAll, env.getActiveProfiles());
         return ResponseEntity.ok(cvService.searchCV(keyword, matchAll));
     }
 
@@ -55,27 +59,27 @@ public class CVResource {
     @ApiResponse(responseCode = "500", description = "Internal error", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = Error.class))})
     @PostMapping
     public ResponseEntity<CVModel> uploadCv(@RequestParam("file")MultipartFile file, @RequestParam(name = "tags",required = false) List<String> tags) {
-        CVLogger.info("[POST] /api/v1/cv : Entering into uploadCv");
+        CVLogger.info("[POST] /api/v1/cv : Entering into uploadCv", env.getActiveProfiles());
         try {
             String[] fn = file.getOriginalFilename().split("\\.");
             String ext = fn[fn.length - 1];
             if (DocumentType.PDF.name().equals(ext.toUpperCase())) {
-                CVLogger.info("uploadCv: Saving pdf file data...");
+                CVLogger.info("uploadCv: Saving pdf file data...", env.getActiveProfiles());
                 CVModel cv = cvService.saveCvPDF(file);
                 tagsService.createTags(cv.getId(), tags);
                 return ResponseEntity.status(HttpStatus.CREATED).body(cv);
             } else {
                 if (DocumentType.DOC.name().equals(ext.toUpperCase()) || DocumentType.DOCX.name().equals(ext.toUpperCase())) {
-                    CVLogger.info("uploadCv: Saving word file data...");
+                    CVLogger.info("uploadCv: Saving word file data...", env.getActiveProfiles());
                     CVModel cv = cvService.saveCvWord(file, ext);
                     tagsService.createTags(cv.getId(), tags);
                     return ResponseEntity.status(HttpStatus.CREATED).body(cv);
                 }
-                CVLogger.error("uploadCv: File extension not allowed");
+                CVLogger.error("uploadCv: File extension not allowed", env.getActiveProfiles());
                 return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(null);
             }
         } catch (IOException | NullPointerException | InvalidFormatException | TagException e) {
-            CVLogger.error("uploadCv: "+e.getMessage());
+            CVLogger.error("uploadCv: "+e.getMessage(), env.getActiveProfiles());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }

@@ -60,6 +60,9 @@ services:
                - ./run.sh
           ports:
                - "8080:8080"
+          environment:
+               ENV_PROFILE: "prod"
+               ELASTIC_ENDPOINT: "elasticsearch:9200"
           volumes:
                - ./data/cv:/root/.m2
           healthcheck:

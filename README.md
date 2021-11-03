@@ -11,6 +11,22 @@ keywords.
 * **Em Alexandre**
 
 Task division [here](https://github.com/alexandre-em/CVIndexing/projects/1)
+
+## Table of Contents
+1. [Installation](#installation)
+   1. [Requirements](#requirements)
+   2. [Run on a local environment](#run-on-a-local-environment)
+   3. [Run tests](#run-tests)
+2. [Endpoints examples](#endpoints-examples)
+   1. [Search Cvs by keywords](#search-cvs-by-keywords)
+   2. [Search Cvs by id](#search-cv-by-id)
+   3. [Index a new CV](#index-a-new-cv)
+   4. [Get CV tags by Cv id](#get-cv-tags-by-cv_id)
+   5. [Add tags to a cv](#add-tags-to-a-cv)
+3. [OpenApi](#openapi)
+4. [Kibana](#kibana)
+5. [Front-end](#front-end)
+
 ## Installation
 ### Requirements
 Install [Docker-compose](https://docs.docker.com/compose/install/), then pull and run elk images
@@ -23,32 +39,46 @@ Then install and run the app container:
 ```shell
     $ docker-compose up build app # run only if kibana is ready 
 ```
-You could run and build all with `docker-compose up -d --build`, 
+>You could run and build all with `docker-compose up -d --build`, 
 but il would generate unnecessary warning/error logs while trying to run the app multiple times.
 ### Run on a local environment
 To run on a local environment (without docker), you will have to update some configuration files:
 * [logback.xml](src/main/resources/logback.xml): line 7 update to your local logstash endpoint
-* [ElasticSearchConfiguration.java](src/main/java/com/indexation/cv/repository/ElasticSearchConfiguration.java) line 18 & 19 update to your local elasticsearch endpoint and authentication information if you have configured one, delete line 19 if not
+* [ElasticSearchConfiguration.java](src/main/java/com/indexation/cv/config/ElasticSearchConfiguration.java) line 18 & 19 update to your local elasticsearch endpoint and authentication information if you have configured one, delete line 19 if not
 
 Then you can run the project app with:
 ```shell
     $ ./mvnw clean package
     $ java -jar ./target/cv-0.0.1-SNAPSHOT.jar
 ```
+### Run tests
+```shell
+    $ docker exec -it app ./mvnw test # if you run the elk docker containers
+    # or 
+    $ ./mvnw test # if you run the api on a local environment
+```
 ---
 :warning: **NOTE**
-Make sure to have Java installed and the JAVA_HOME environment set. :warning:
+Make sure to have Java installed and the JAVA_HOME environment set
 ---
+
 ## Endpoints examples
+>Before running some calls on the API, you can run the tests to somehow generate data located at [CVWebIntegrationTest.java](src/test/java/com/indexation/cv/CVWebIntegrationTest.java)
 ### Search Cvs by keywords
 ```shell
-    $ curl "localhost:8080/api/v1/cv?keyword=java,node" | jq
+    # Which candidates are doing Java and Node at the same time?
+    $ curl "localhost:8080/api/v1/cv?keyword=java,node?match_all=true" | jq
 ```
+
+>You can also add a param `match_all` which is a boolean that filter CVs by matching at least one of the keywords if `false`, 
+>and matching all keywords if value to `true`. Value by default of `match_all` is set to `false`. The same goes with the keyword search on the `tags` endpoint.
 
 ### Search Cv by id
 ```shell
+    # Get details of a specific CV
     $ curl "localhost:8080/api/v1/cv/BQZt13wBU44mpGRqWCPE" | jq
 ```
+
 
 ### Index a new CV
 ```shell
@@ -99,6 +129,8 @@ Make sure to have Java installed and the JAVA_HOME environment set. :warning:
 ## OpenAPI
 You can also visualize how to use all endpoints with the OpenApi available at [api/apidocs.html](http://localhost:8080/apidocs.html)
 
+All endpoints have been described with the required query's params, body, etc. and all possible response and a quick description of the reason.
+
 ![image](images/openapi.png)
 ## Kibana
 You can access to kibana at [localhost:5601](http://localhost:5601/)
@@ -112,4 +144,10 @@ To be able to visualize the data on kibana:
 
 ![image](images/kibana_logs.png)
 ## Front-end
+A very quick front-end has also been developed, using React with Typescript and an external library that allows users to drag and drop files on the upload box.
+### Build and Run
+```shell
+    $ docker-compose up -d --build cvindexer
+```
+### Screenshot
 ![image](images/front.png)

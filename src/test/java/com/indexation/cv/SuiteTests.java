@@ -4,6 +4,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({ CvUtilTest.class, CvServiceTest.class, CVWebIntegrationTest.class })
+@Suite.SuiteClasses({ CvUtilTest.class, CvServiceTest.class, CVWebIntegrationTest.class, TagsServiceTest.class })
 public class SuiteTests {
 }

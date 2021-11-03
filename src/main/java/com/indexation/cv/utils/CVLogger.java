@@ -4,6 +4,7 @@ import com.indexation.cv.controller.CVResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -12,25 +13,25 @@ import java.util.Objects;
 public class CVLogger {
     private final static Logger logger = LoggerFactory.getLogger(CVResource.class);
 
-    public static void info(String message) {
-        if (Objects.equals(Constant.ENV, "PROD")) {
+    public static void info(String message, String[] env) {
+        if (Arrays.asList(env).contains("prod")) {
             logger.info(message);
         } else {
-            System.out.println(message);
+            System.out.println("[dev] "+message);
         }
     }
-    public static void warn(String message) {
-        if (Objects.equals(Constant.ENV, "PROD")) {
+    public static void warn(String message, String[] env) {
+        if (Arrays.asList(env).contains("prod")) {
             logger.warn(message);
         } else {
-            System.out.println(message);
+            System.out.println("[dev] "+message);
         }
     }
-    public static void error(String message) {
-        if (Objects.equals(Constant.ENV, "PROD")) {
+    public static void error(String message, String[] env) {
+        if (Arrays.asList(env).contains("prod")) {
             logger.error(message);
         } else {
-            System.err.println(message);
+            System.err.println("[dev] "+message);
         }
     }
 }
