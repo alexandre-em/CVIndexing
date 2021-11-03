@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +23,8 @@ import java.util.List;
 public class TagsResource {
     @Autowired
     TagsService tagsService;
+    @Autowired
+    Environment env;
 
     @Operation(summary = "Get tags of a CV")
     @ApiResponse(responseCode = "200", description = "Tag Found", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = Tags.class))})
@@ -29,12 +32,12 @@ public class TagsResource {
     @GetMapping("/{id}")
     public ResponseEntity<Tags> findTags(@PathVariable String id) {
         try {
-            CVLogger.info("Searching tags: "+id);
+            CVLogger.info("Searching tags: "+id, env.getActiveProfiles());
             Tags tags = tagsService.getTagsById(id);
-            CVLogger.info("Tags found: "+id);
+            CVLogger.info("Tags found: "+id, env.getActiveProfiles());
             return ResponseEntity.status(HttpStatus.OK).body(tags);
         } catch (TagException e) {
-            CVLogger.error(e.getMessage());
+            CVLogger.error(e.getMessage(), env.getActiveProfiles());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
@@ -45,12 +48,12 @@ public class TagsResource {
     @GetMapping("/cv/{id}")
     public ResponseEntity<Tags> findCvTags(@PathVariable String id) {
         try {
-            CVLogger.info("Searching tags of cv: "+id);
+            CVLogger.info("Searching tags of cv: "+id, env.getActiveProfiles());
             Tags tags = tagsService.getTagsByCvId(id);
-            CVLogger.info("tags of cv found "+id);
+            CVLogger.info("tags of cv found "+id, env.getActiveProfiles());
             return ResponseEntity.status(HttpStatus.OK).body(tags);
         } catch (TagException e) {
-            CVLogger.error(e.getMessage());
+            CVLogger.error(e.getMessage(), env.getActiveProfiles());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
@@ -61,12 +64,12 @@ public class TagsResource {
     @GetMapping
     public ResponseEntity<List<Tags>> findTagsByKeywords(@RequestParam("search") String search, @RequestParam(name = "match_all", required = false, defaultValue = "false") boolean matchAll) {
         try {
-            CVLogger.info("Searching CV tags matching "+search);
+            CVLogger.info("Searching CV tags matching "+search, env.getActiveProfiles());
             List<Tags> tags = tagsService.getTagsByKeywords(search, matchAll);
-            CVLogger.info("CVs Found");
+            CVLogger.info("CVs Found", env.getActiveProfiles());
             return ResponseEntity.status(HttpStatus.OK).body(tags);
         } catch (TagException e) {
-           CVLogger.error(e.getMessage());
+           CVLogger.error(e.getMessage(), env.getActiveProfiles());
            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
@@ -78,12 +81,12 @@ public class TagsResource {
     @PatchMapping("/cv/{id}")
     public ResponseEntity<Tags> addCvTags(@PathVariable String id, @RequestParam("tags") List<String> tags) {
         try {
-            CVLogger.info("Updating tags of cv: "+id);
+            CVLogger.info("Updating tags of cv: "+id, env.getActiveProfiles());
             Tags tag = tagsService.updateTagsByCvId(id, tags);
-            CVLogger.info("CV updated: "+id);
+            CVLogger.info("CV updated: "+id, env.getActiveProfiles());
             return ResponseEntity.status(HttpStatus.OK).body(tag);
         } catch (TagException e) {
-            CVLogger.error("There is no cv matching this `cv_id`");
+            CVLogger.error("There is no cv matching this `cv_id`", env.getActiveProfiles());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }

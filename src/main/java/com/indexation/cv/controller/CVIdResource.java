@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class CVIdResource {
     @Autowired
     private CVService cvService;
+    @Autowired
+    private Environment env;
 
     /**
      * GET /api/v1/cv/{id}: Allow to access the content of a cv
@@ -32,7 +35,7 @@ public class CVIdResource {
     @ApiResponse(responseCode = "200", description = "CV matching the id founded", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = CVResponse.class))})
     @GetMapping
     public ResponseEntity<CVResponse> searchById(@PathVariable("id") String id) {
-        CVLogger.info("[GET] CV ID "+id);
+        CVLogger.info("[GET] CV ID "+id, env.getActiveProfiles());
         CVResponse cv = cvService.searchById(id);
         if (cv==null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         return ResponseEntity.ok(cv);
