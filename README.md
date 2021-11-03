@@ -5,7 +5,7 @@ CV Indexing is an API developed in java spring boot, with the elk stack (elastic
 It allows the user to upload then index __*.doc, *.docx and *.pdf__ CV files to elastic search and to search CVs matching
 keywords.
 
-### Group:
+### Group members:
 * **Sivacoumar Silvain**
 * **Bouibker Oussama**
 * **Em Alexandre**
@@ -51,12 +51,22 @@ Then you can run the project app with:
     $ ./mvnw clean package
     $ java -jar ./target/cv-0.0.1-SNAPSHOT.jar
 ```
+#### Environment variables (WIP)
+There are also some environment variables that have a default value if not defined, for instance:
+```json
+  {
+      "ENV_PROFILE": "dev",
+      "ELASTIC_ENDPOINT": "localhost:9200"
+  }
+```
+
 ### Run tests
 ```shell
     $ docker exec -it app ./mvnw test # if you run the elk docker containers
     # or 
     $ ./mvnw test # if you run the api on a local environment
 ```
+
 ---
 :warning: **NOTE**
 Make sure to have Java installed and the JAVA_HOME environment set
@@ -71,7 +81,7 @@ Make sure to have Java installed and the JAVA_HOME environment set
 ```
 
 >You can also add a param `match_all` which is a boolean that filter CVs by matching at least one of the keywords if `false`, 
->and matching all keywords if value to `true`. Value by default of `match_all` is set to `false`. The same goes with the keyword search on the `tags` endpoint.
+>and matching all keywords if value to `true`. Value by default `match_all` is set to `false`. The same goes with the keyword search on the `tags` endpoint.
 
 ### Search Cv by id
 ```shell
