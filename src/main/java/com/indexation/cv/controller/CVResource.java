@@ -20,7 +20,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/cv")
@@ -62,21 +64,22 @@ public class CVResource {
         CVLogger.info("[POST] /api/v1/cv : Entering into uploadCv", env.getActiveProfiles());
         try {
             String[] fn = file.getOriginalFilename().split("\\.");
-            String ext = fn[fn.length - 1];
-            if (DocumentType.PDF.name().equals(ext.toUpperCase())) {
-                CVLogger.info("uploadCv: Saving pdf file data...", env.getActiveProfiles());
-                CVModel cv = cvService.saveCvPDF(file);
-                tagsService.createTags(cv.getId(), tags);
-                return ResponseEntity.status(HttpStatus.CREATED).body(cv);
-            } else {
-                if (DocumentType.DOC.name().equals(ext.toUpperCase()) || DocumentType.DOCX.name().equals(ext.toUpperCase())) {
-                    CVLogger.info("uploadCv: Saving word file data...", env.getActiveProfiles());
-                    CVModel cv = cvService.saveCvWord(file, ext);
+            String ext = fn[fn.length - 1]; // extracting file's extension
+            CVModel cv;
+            switch(ext.toUpperCase()){
+                case "PDF": // PDF file
+                    CVLogger.info("uploadCv: Saving pdf file data...", env.getActiveProfiles());
+                    cv = cvService.saveCvPDF(file);
                     tagsService.createTags(cv.getId(), tags);
                     return ResponseEntity.status(HttpStatus.CREATED).body(cv);
-                }
-                CVLogger.error("uploadCv: File extension not allowed", env.getActiveProfiles());
-                return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(null);
+                case "DOC": case "DOCX": // Word file
+                    CVLogger.info("uploadCv: Saving word file data...", env.getActiveProfiles());
+                    cv = cvService.saveCvWord(file, ext);
+                    tagsService.createTags(cv.getId(), tags);
+                    return ResponseEntity.status(HttpStatus.CREATED).body(cv);
+                default: // File format not supported
+                    CVLogger.error("uploadCv: File extension not allowed", env.getActiveProfiles());
+                    return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(null);
             }
         } catch (IOException | NullPointerException | InvalidFormatException | TagException e) {
             CVLogger.error("uploadCv: "+e.getMessage(), env.getActiveProfiles());
