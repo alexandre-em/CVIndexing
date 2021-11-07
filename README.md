@@ -2,13 +2,15 @@
 [![CircleCI](https://circleci.com/gh/alexandre-em/CVIndexing/tree/master.svg?style=shield&circle-token=38d82677883311039bdcff9c01271dc25f0370b4)](https://circleci.com/gh/alexandre-em/CVIndexing/tree/master)
 
 CV Indexing is an API developed in java spring boot, with the elk stack (elasticsearch, kibana, logstash). 
-It allows the user to upload then index __*.doc, *.docx and *.pdf__ CV files to elastic search and to search CVs matching
+It allows the user to upload then index __*.doc, *.docx and *.pdf__ CV files into elastic search and to search CVs matching
 keywords.
 
 ### Group members:
-* **Sivacoumar Silvain**
+* **Sivacoumar Sylvain**
 * **Bouibker Oussama**
 * **Em Alexandre**
+
+Promo: M2 RES-INSTA
 
 Task division [here](https://github.com/alexandre-em/CVIndexing/projects/1)
 
@@ -52,7 +54,7 @@ Then you can run the project app with:
     $ java -jar ./target/cv-0.0.1-SNAPSHOT.jar
 ```
 #### Environment variables (WIP)
-There are also some environment variables that have a default value if not defined, for instance:
+There are also some environment variables that have a default value if not defined:
 ```json
   {
       "ENV_PROFILE": "dev",
@@ -73,7 +75,7 @@ Make sure to have Java installed and the JAVA_HOME environment set
 ---
 
 ## Endpoints examples
->Before running some calls on the API, you can run the tests to somehow generate data located at [CVWebIntegrationTest.java](src/test/java/com/indexation/cv/CVWebIntegrationTest.java)
+>Before running some calls on the API, you can run the tests to somehow generate some data located at [CVWebIntegrationTest.java](src/test/java/com/indexation/cv/CVWebIntegrationTest.java)
 ### Search Cvs by keywords
 ```shell
     # Which candidates are doing Java and Node at the same time?
@@ -81,7 +83,7 @@ Make sure to have Java installed and the JAVA_HOME environment set
 ```
 
 >You can also add a param `match_all` which is a boolean that filter CVs by matching at least one of the keywords if `false`, 
->and matching all keywords if value to `true`. Value by default `match_all` is set to `false`. The same goes with the keyword search on the `tags` endpoint.
+>and matching all keywords if value to `true`. By default `match_all` is set to `false`. The same goes with the keyword search on the `tags` endpoint.
 
 ### Search Cv by id
 ```shell
@@ -139,11 +141,11 @@ Make sure to have Java installed and the JAVA_HOME environment set
 ## OpenAPI
 You can also visualize how to use all endpoints with the OpenApi available at [api/apidocs.html](http://localhost:8080/apidocs.html)
 
-All endpoints have been described with the required query's params, body, etc. and all possible response and a quick description of the reason.
+All endpoints have been described with the required query's params, body, etc. with all possible responses and a quick description of the reason.
 
 ![image](images/openapi.png)
 ## Kibana
-You can access to kibana at [localhost:5601](http://localhost:5601/)
+You can also access to kibana at [localhost:5601](http://localhost:5601/)
 To be able to visualize the data on kibana:
 ```json
     {

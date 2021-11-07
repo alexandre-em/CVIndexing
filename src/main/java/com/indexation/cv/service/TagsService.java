@@ -43,8 +43,10 @@ public class TagsService {
 
     public Tags createTags(String cvId, List<String> tags) throws TagException {
         List<Tags> cvTags = tagsRepository.findTagsByCvId(cvId);
-        if(cvTags.size()>=1) throw new TagException("This CV is already tagged");
-        if (tags == null) return tagsRepository.save(new Tags(cvId, new ArrayList<>()));
+        if(cvTags.size()>=1)
+            throw new TagException("This CV is already tagged");
+        if (tags == null)
+            return tagsRepository.save(new Tags(cvId, new ArrayList<>()));
         return tagsRepository.save(new Tags(cvId, tags));
     }
 
@@ -52,7 +54,7 @@ public class TagsService {
         Tags cvTags = getTagsByCvId(cvId);
         cvTags.getTags().addAll(
                 tags.stream().filter(val -> !cvTags.getTags().contains(val))
-                        .collect(Collectors.toList()));
+                        .collect(Collectors.toList())); // adding tags that are not already in the tag list
         return tagsRepository.save(cvTags);
     }
 
