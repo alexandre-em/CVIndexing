@@ -33,7 +33,7 @@ public class CVUtils {
     public static File convertMultipartFile(MultipartFile file, String[] env) throws IOException {
         String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
         String filename = timeStamp+"_"+file.getOriginalFilename(); // Generate a unique name for the file
-        String newPath = "./static/"+filename;
+        String newPath = "/tmp/"+filename;
         CVLogger.info("Converting MultipartFile to File", env);
         File tmp = new File(newPath);
         tmp.createNewFile(); // Saving the file into the static directory to be accessible by typing the correct path
