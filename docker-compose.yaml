@@ -18,6 +18,7 @@ services:
           networks:
                - elastic
                - logstash
+               - kibana
      kibana:
           image: docker.elastic.co/kibana/kibana:7.15.0
           container_name: kibana
@@ -26,12 +27,10 @@ services:
                - ./config/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml:rw
           ports:
                - "5601:5601"
-          links:
-               - elasticsearch:elasticsearch
           depends_on:
                - elasticsearch
           networks:
-               - elastic
+               - kibana
      logstash:
           image: docker.elastic.co/logstash/logstash:7.15.0
           container_name: logstash
@@ -39,8 +38,6 @@ services:
           command: logstash -f /usr/share/logstash/pipeline/logstash.conf
           volumes:
                - ./config/logstash:/usr/share/logstash/pipeline/
-          links:
-               - elasticsearch:elasticsearch
           healthcheck:
                test: ["CMD", "curl", "-f", "http://logstash:9600"]
           depends_on:
@@ -81,4 +78,6 @@ networks:
      elastic:
           driver: bridge
      logstash:
+          driver: bridge
+     kibana:
           driver: bridge
