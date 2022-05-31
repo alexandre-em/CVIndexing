@@ -13,13 +13,11 @@ services:
                xpack.security.enabled: "true"
                xpack.monitoring.collection.enabled: "true"
                discovery.type: "single-node"
-          ports:
-               - "9200:9200"
-               - "9300:9300"
           healthcheck:
                test: ["CMD", "curl", "-f", "http://elastic:root@elasticsearch:9200"]
           networks:
                - elastic
+               - logstash
      kibana:
           image: docker.elastic.co/kibana/kibana:7.15.0
           container_name: kibana
@@ -38,9 +36,6 @@ services:
           image: docker.elastic.co/logstash/logstash:7.15.0
           container_name: logstash
           hostname: logstash
-          ports:
-               - "5044:5044"
-               - "9600:9600"
           command: logstash -f /usr/share/logstash/pipeline/logstash.conf
           volumes:
                - ./config/logstash:/usr/share/logstash/pipeline/
@@ -51,13 +46,11 @@ services:
           depends_on:
                - elasticsearch
           networks:
-               - elastic
+               - logstash
      app:
           container_name: app
           build: .
           restart: on-failure
-          command:
-               - ./run.sh
           ports:
                - "8080:8080"
           environment:
@@ -74,17 +67,18 @@ services:
                     condition: service_healthy
           networks:
                - elastic
+               - logstash
      cvindexer:
           container_name: cvindexer
           build: ./cv-indexer
           restart: on-failure
           ports:
-               - "80:5000"
+               - "80:80"
           depends_on:
                app:
                     condition: service_healthy
-          networks:
-               - elastic
 networks:
      elastic:
+          driver: bridge
+     logstash:
           driver: bridge
