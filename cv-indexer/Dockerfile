@@ -11,6 +11,7 @@ RUN npm run build
 
 # Serve the built app on a nginx server
 FROM nginx:stable-alpine
+COPY ./default.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /cv-indexer/build /usr/share/nginx/html
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 
-const instance = axios.create({ baseURL: 'http://localhost:8080/api/v1/' })
+const instance = axios.create({ baseURL: 'http://localhost/api/v1/' })
 
 export const search = (keywords:string): Promise<AxiosResponse<CVModel[]>> => {
 	return instance.get(`cv?keyword=${keywords}`);
