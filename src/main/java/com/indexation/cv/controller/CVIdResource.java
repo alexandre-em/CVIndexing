@@ -35,7 +35,7 @@ public class CVIdResource {
     @ApiResponse(responseCode = "200", description = "CV matching the id founded", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = CVResponse.class))})
     @GetMapping
     public ResponseEntity<CVResponse> searchById(@PathVariable("id") String id) {
-        CVLogger.info("[GET] CV ID "+id, env.getActiveProfiles());
+        CVLogger.info("[GET] CV ID    "+id, env.getActiveProfiles());
         CVResponse cv = cvService.searchById(id);
         if (cv==null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         return ResponseEntity.ok(cv);

@@ -56,7 +56,7 @@ function App() {
             {searchResult.length > 0 && <h2 style={{ width: "80%" }}>Results "{searchInput}":</h2>}
             {searchResult.map((val:CVModel) => {
               return (
-              <div key={`cv${val.id}`} className="cv-result" onClick={() => { handleClick(val.id) }}>
+              <div key={`cv${val.id}`} className="cv-result">
                 <p><b>CV ID: {val.id}</b><br/>
                 type: {val.type}<br/>
                 Upload date: {new Date(parseInt(val.uploadedDate)).toUTCString()}

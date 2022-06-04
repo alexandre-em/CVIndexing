@@ -1,30 +1,12 @@
 version: "2.1"
 
 services:
-     
-  #     traefik:
-  #       image: traefik:v2.1
-  #       networks:
-  #            - publicnetwork
-  #       command: 
-  #            - --api.insecure=true
-  #            - --providers.docker
-  #            - --providers.docker.network=publicnetwork
-  #            - --providers.docker.exposedbydefault=false
-  #            - --entryPoints.web.address=:80
-  #       ports:
-  #            - "80:80"
-  #            - "8080:8080"
-  #       volumes:
-  #            - /var/run/docker.sock:/var/run/docker.sock
-  #       restart: always
-
      elasticsearch:
           image: docker.elastic.co/elasticsearch/elasticsearch:7.15.0
           container_name: elasticsearch
           hostname: elasticsearch
-#          volumes:
-#               - ./data/elasticsearch:/usr/share/elasticsearch/data
+          volumes:
+               - elasticsearch:/usr/share/elasticsearch/data
           environment:
                ES_JAVA_OPTS: "-Xmx256m -Xms256m"
                ELASTIC_PASSWORD: "root"
@@ -39,15 +21,13 @@ services:
           image: docker.elastic.co/kibana/kibana:7.15.0
           container_name: kibana
           hostname: kibana
-          ports:
-               - "5601:5601"
-          volumes:
-               - ./config/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml:rw
           environment:
-               - 'xpack.security.enabled=true'
-               - 'SERVER_BASEPATH=/kibana'
+               - xpack.security.enabled=true
+               - SERVER_BASEPATH="/kibana"
                - 'SERVER_HOST=0.0.0.0'
                - 'ELASTICSEARCH_URL=http://elasticsearch:9200'
+               - 'ELASTICSEARCH_HOSTS=http://elasticsearch:9200'
+               - 'ELASTICSEARCH_USERNAME=elastic'
                - 'ELASTICSEARCH_PASSWORD=root'
           depends_on:
                - elasticsearch
@@ -61,8 +41,6 @@ services:
           command: logstash -f /usr/share/logstash/pipeline/logstash.conf
           volumes:
                - ./config/logstash:/usr/share/logstash/pipeline/
-          links:
-               - elasticsearch:elasticsearch
           healthcheck:
                test: ["CMD", "curl", "-f", "http://logstash:9600"]
           depends_on:
@@ -70,14 +48,12 @@ services:
           networks:
                - elastic
      app:
+          image: cvindexer_api:0.1
           container_name: app
-          build: .
           restart: on-failure
           environment:
                ENV_PROFILE: "prod"
                ELASTIC_ENDPOINT: "elasticsearch:9200"
-          volumes:
-               - ./data/cv:/root/.m2
           healthcheck:
                test: ["CMD", "curl", "-f", "http://app:8080/api/v1/cv?keyword=java"]
           
@@ -91,10 +67,10 @@ services:
                - elastic
                - publicnetwork
      cvindexer:
+          image: cvindexer_app:0.1
           container_name: cvindexer
           networks:
                - publicnetwork
-          build: ./cv-indexer
           restart: on-failure
           ports:
                - "80:80"
@@ -107,3 +83,7 @@ networks:
           driver: bridge
      publicnetwork:
           driver: bridge
+
+volumes:
+     elasticsearch:
+          driver: local

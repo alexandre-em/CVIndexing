@@ -20,7 +20,7 @@ FROM openjdk:8u171-jre-alpine
 RUN apk --no-cache add curl
 
 # Copy dependencies so the thin jar won't need to re-download them
-COPY --from=maven /root/.m2 /root/.m2
+# COPY --from=maven /root/.m2 /root/.m2
 
 # set deployment directory
 WORKDIR /api
